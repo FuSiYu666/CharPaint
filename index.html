@@ -104,7 +104,7 @@
                             const g = imageData[index + 1];
                             const b = imageData[index + 2];
                             const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-                            const asciiChar = '@%#*+=~-:· '[Math.floor(gray / 255 * 9)];
+                            const asciiChar = '@%#*+=-:. '[Math.floor(gray / 255 * 9)];
                             asciiStr += asciiChar;
                         }
                         asciiStr += '\n';
