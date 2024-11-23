@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to ASCII Art Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #107eb0; /* 浅蓝色背景 */
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #uploadSection, #outputSection {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="file"], input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #d9edf7; /* 深蓝色背景 */
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5cb85c; /* 绿色按钮 */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #4cae4c; /* 按钮悬停效果 */
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+            background-color: #d9edf7; /* 深蓝色背景 */
+        }
+    </style>
+</head>
+<body>
+    <h1>Image to ASCII Art Converter</h1>
+    <div id="uploadSection">
+        <input type="file" id="imageUpload" accept="image/*">
+        <br><br>
+        <label for="widthInput">Width: </label>
+        <input type="number" id="widthInput" value="100">
+        <br><br>
+        <label for="heightInput">Height: </label>
+        <input type="number" id="heightInput" value="30">
+        <br><br>
+        <button onclick="convertToAscii()">Convert</button>
+    </div>
+    <div id="outputSection">
+        <textarea id="asciiOutput" readonly></textarea>
+    </div>
+
+    <script>
+        function convertToAscii() {
+            const fileInput = document.getElementById('imageUpload');
+            const widthInput = document.getElementById('widthInput').value;
+            const heightInput = document.getElementById('heightInput').value;
+            const asciiOutput = document.getElementById('asciiOutput');
+
+            if (fileInput.files.length === 0) {
+                alert("Please upload an image first.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = widthInput;
+                    canvas.height = heightInput;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, widthInput, heightInput);
+                    const imageData = ctx.getImageData(0, 0, widthInput, heightInput).data;
+                    let asciiStr = '';
+                    for (let y = 0; y < heightInput; y++) {
+                        for (let x = 0; x < widthInput; x++) {
+                            const index = (y * widthInput + x) * 4;
+                            const r = imageData[index];
+                            const g = imageData[index + 1];
+                            const b = imageData[index + 2];
+                            const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                            const asciiChar = '@%#*+=~-:· '[Math.floor(gray / 255 * 9)];
+                            asciiStr += asciiChar;
+                        }
+                        asciiStr += '\n';
+                    }
+                    asciiOutput.value = asciiStr;
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
